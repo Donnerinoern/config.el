@@ -65,12 +65,20 @@
   (evil-define-key 'normal 'global (kbd "<leader>bp") 'evil-prev-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>bd") 'evil-delete-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>bb") 'consult-buffer)
+
   (evil-define-key 'normal 'global (kbd "<leader>ff") 'find-file)
   (evil-define-key 'normal 'global (kbd "<leader>fr") 'consult-recent-file)
   (evil-define-key 'normal 'global (kbd "<leader>fh") 'project-find-file)
   (evil-define-key 'normal 'globak (kbd "<leader>sp") 'consult-ripgrep)
   (evil-define-key 'normal 'global (kbd "<leader>sf") 'consult-line)
-  (evil-define-key 'normal 'global (kbd "<leader>ge") 'consult-flymake)
+
+  (evil-define-key 'normal 'global (kbd "<leader>de") 'consult-flymake)
+
+  (evil-define-key 'normal 'global (kbd "<leader>gs") 'magit-stage-file)
+  (evil-define-key 'normal 'global (kbd "<leader>gc") 'magit-commit)
+  (evil-define-key 'normal 'global (kbd "<leader>gp") 'magit-push)
+  (evil-define-key 'normal 'globak (kbd "<leader>gP") 'magit-pull)
+  (evil-define-key 'normal 'global (kbd "<leader>gf") 'magit-fetch)
 
   (evil-define-key 'normal 'global (kbd "<leader>0") 'delete-window)
   (evil-define-key 'normal 'global (kbd "<leader>wh") 'windmove-left)
@@ -83,6 +91,11 @@
   :after evil
   :config
   (evil-collection-init))
+
+;; evil-multiedit
+(use-package evil-multiedit
+  :config
+  (evil-multiedit-default-keybinds))
 
 ;; evil-org
 (use-package evil-org
