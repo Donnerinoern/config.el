@@ -20,6 +20,7 @@
       indent-tabs-mode t
       history-length 25
       use-dialog-box nil
+      eldoc-echo-area-use-multiline-p nil
       custom-file (locate-user-emacs-file "custom-vars.el"))
 (load custom-file 'noerror 'nomessage)
 
@@ -48,6 +49,67 @@
   (all-the-icons-completion-mode)
   (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))
 
+;; centaur-tabs
+(use-package centaur-tabs
+  :demand
+  :config
+  (centaur-tabs-mode t)
+  (setq centaur-tabs-set-modified-marker t
+        centaur-tabs-set-icons t
+	centaur-tabs-icon-type 'all-the-icons
+	centaur-tabs-set-bar 'under
+	centaur-tabs-style "wave"
+	x-underline-at-descent-line t))
+
+;; tabspaces
+(use-package tabspaces
+  :hook (after-init . tabspaces-mode))
+
+;; modes
+(use-package rust-mode)
+(use-package go-mode)
+(use-package zig-mode)
+
+;; eglot
+(add-hook 'rust-ts-mode-hook 'eglot-ensure)
+(add-hook 'go-ts-mode-hook 'eglot-ensure)
+(add-hook 'zig-mode-hook 'eglot-ensure)
+
+;; tree-sitter
+(setq treesit-language-source-alist
+      '((html "https://github.com/tree-sitter/tree-sitter-html")
+	(css "https://github.com/tree-sitter/tree-sitter-css")
+	(javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+	(rust "https://github.com/tree-sitter/tree-sitter-rust")
+	(go "https://github.com/tree-sitter/tree-sitter-go")
+	(zig "https://github.com/maxxnino/tree-sitter-zig")
+	(c "https://github.com/tree-sitter/tree-sitter-c")
+	(cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+	(json "https://github.com/tree-sitter/tree-sitter-json")
+	(toml "https://github.com/tree-sitter/tree-sitter-toml")))
+
+(setq major-mode-remap-alist
+      '((html-mode . html-ts-mode)
+	(css-mode . css-ts-mode)
+	(js-mode . js-ts-mode)
+	(rust-mode . rust-ts-mode)
+	(go-mode . go-ts-mode)
+	(c-mode . c-ts-mode)
+	(c++-mode . c++-ts-mode)
+	(json-mode . json-ts-mode)
+	(toml-mode . toml-ts-mode)))
+
+;; flycheck
+(use-package flycheck
+  :init
+  (global-flycheck-mode))
+
+(use-package flycheck-eglot
+  :after (flycheck)
+  :config
+  (global-flycheck-eglot-mode))
+
 ;; evil
 (use-package evil
   :init
@@ -61,8 +123,10 @@
   :config
   (evil-mode 1)
   (evil-set-leader 'normal (kbd "SPC"))
-  (evil-define-key 'normal 'global (kbd "<leader>bn") 'evil-next-buffer)
-  (evil-define-key 'normal 'global (kbd "<leader>bp") 'evil-prev-buffer)
+  ;; (evil-define-key 'normal 'global (kbd "<leader>bn") 'evil-next-buffer)
+  ;; (evil-define-key 'normal 'global (kbd "<leader>bp") 'evil-prev-buffer)
+  (evil-define-key 'normal 'global (kbd "<leader>bn") 'centaur-tabs-forward)
+  (evil-define-key 'normal 'global (kbd "<leader>bp") 'centaur-tabs-backward)
   (evil-define-key 'normal 'global (kbd "<leader>bd") 'evil-delete-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>bb") 'consult-buffer)
 
@@ -73,6 +137,8 @@
   (evil-define-key 'normal 'global (kbd "<leader>sf") 'consult-line)
 
   (evil-define-key 'normal 'global (kbd "<leader>de") 'consult-flymake)
+  (evil-define-key 'normal 'global (kbd "<leader>dn") 'flycheck-next-error)
+  (evil-define-key 'normal 'global (kbd "<leader>dp") 'flycheck-previous-error)
 
   (evil-define-key 'normal 'global (kbd "<leader>gs") 'magit-stage-file)
   (evil-define-key 'normal 'global (kbd "<leader>gc") 'magit-commit)
@@ -232,7 +298,7 @@
   (global-hl-todo-mode))
 
 ;; highlight-indent-guides
-(use-package highligh-indent-guides
+(use-package highlight-indent-guides
   :config
   (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
   (setq highlight-indent-guides-method 'character))
