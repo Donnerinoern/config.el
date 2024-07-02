@@ -141,6 +141,7 @@
   (evil-define-key 'normal 'global (kbd "<leader>dp") 'flycheck-previous-error)
 
   (evil-define-key 'normal 'global (kbd "<leader>gs") 'magit-stage-file)
+  (evil-define-key 'normal 'global (kbd "<leader>gS") 'magit-status)
   (evil-define-key 'normal 'global (kbd "<leader>gc") 'magit-commit)
   (evil-define-key 'normal 'global (kbd "<leader>gp") 'magit-push)
   (evil-define-key 'normal 'globak (kbd "<leader>gP") 'magit-pull)
