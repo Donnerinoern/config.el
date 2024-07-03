@@ -18,6 +18,7 @@
       dired-create-destination-dirs 'ask
       global-auto-revert-non-file-buffers t
       indent-tabs-mode t
+      tab-bar-new-tab-choice 'window
       history-length 25
       use-dialog-box nil
       eldoc-echo-area-use-multiline-p nil
@@ -33,6 +34,11 @@
 
 (require 'use-package)
 (setq use-package-always-ensure t)
+
+;; emacs
+(use-package emacs
+  :init
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit))
 
 ;; chocolate-theme
 (use-package chocolate-theme
@@ -57,13 +63,22 @@
   (setq centaur-tabs-set-modified-marker t
         centaur-tabs-set-icons t
 	centaur-tabs-icon-type 'all-the-icons
+	centaur-tabs-cycle-scope 'tabs
 	centaur-tabs-set-bar 'under
-	centaur-tabs-style "wave"
-	x-underline-at-descent-line t))
+	centaur-tabs-height 32
+	centaur-tabs-style "bar"))
 
 ;; tabspaces
 (use-package tabspaces
-  :hook (after-init . tabspaces-mode))
+  :hook (after-init . tabspaces-mode)
+  :init
+  (setq tabspaces-exclude-buffers '("*scratch*")
+	tabspaces-include-buffers nil)
+  (add-hook 'tab-bar-tab-post-open-functions #'tabspaces--tab-post-open-function))
+
+;; doom-modeline
+(use-package doom-modeline
+  :hook (after-init . doom-modeline-mode))
 
 ;; modes
 (use-package rust-mode)
@@ -133,6 +148,10 @@
   (evil-define-key 'normal 'global (kbd "<leader>ff") 'find-file)
   (evil-define-key 'normal 'global (kbd "<leader>fr") 'consult-recent-file)
   (evil-define-key 'normal 'global (kbd "<leader>fh") 'project-find-file)
+
+  (evil-define-key 'normal 'global (kbd "<leader>pf") 'tabspaces-open-or-create-project-and-workspace)
+  (evil-define-key 'normal 'global (kbd "<leader>ps") 'tabspaces-switch-or-create-workspace)
+
   (evil-define-key 'normal 'globak (kbd "<leader>sp") 'consult-ripgrep)
   (evil-define-key 'normal 'global (kbd "<leader>sf") 'consult-line)
 
@@ -141,11 +160,12 @@
   (evil-define-key 'normal 'global (kbd "<leader>dp") 'flycheck-previous-error)
 
   (evil-define-key 'normal 'global (kbd "<leader>gs") 'magit-stage-file)
-  (evil-define-key 'normal 'global (kbd "<leader>gS") 'magit-status)
+  (evil-define-key 'normal 'global (kbd "<leader>gg") 'magit-status)
   (evil-define-key 'normal 'global (kbd "<leader>gc") 'magit-commit)
   (evil-define-key 'normal 'global (kbd "<leader>gp") 'magit-push)
   (evil-define-key 'normal 'globak (kbd "<leader>gP") 'magit-pull)
   (evil-define-key 'normal 'global (kbd "<leader>gf") 'magit-fetch)
+  (evil-define-key 'normal 'global (kbd "<leader>gf") 'magit-log)
 
   (evil-define-key 'normal 'global (kbd "<leader>0") 'delete-window)
   (evil-define-key 'normal 'global (kbd "<leader>wh") 'windmove-left)
@@ -292,6 +312,13 @@
 
 ;; magit
 (use-package magit)
+
+;; diff-hl
+(use-package diff-hl
+  :init
+  (global-diff-hl-mode)
+  (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
 ;; hl-todo
 (use-package hl-todo
